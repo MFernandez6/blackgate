@@ -1,0 +1,321 @@
+// BLACKGATE — Referral & Intake Portal
+// Blackline Public Adjusters LLC
+//
+// Intake is the umbrella record. IntakeSource is a lookup table (not a
+// field) so new channels can be added without a schema migration.
+// Referral exists only when the source is a referral type.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// SQLite has no native enums. Constrained string values live in src/lib/types.ts.
+
+// ---------------------------------------------------------------------------
+// Sequence — BG-YY-####
+// ---------------------------------------------------------------------------
+
+model IntakeNumberSequence {
+  year      Int @id
+  lastValue Int @default(0)
+}
+
+// ---------------------------------------------------------------------------
+// Staff (auth principal)
+// ---------------------------------------------------------------------------
+
+model Staff {
+  id           String    @id @default(cuid())
+  name         String
+  email        String    @unique
+  passwordHash String
+  role         String    @default("INTAKE_STAFF")
+  isActive     Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  createdIntakes   Intake[]          @relation("IntakeCreatedBy")
+  triageDecisions  TriageDecision[]  @relation("TriageDecidedBy")
+  uploadedDocs     IntakeDocument[]  @relation("DocumentUploader")
+  handoffs         HandoffLog[]      @relation("HandoffBy")
+}
+
+// ---------------------------------------------------------------------------
+// IntakeSource — lookup, not a field. Add rows instead of migrating.
+// ---------------------------------------------------------------------------
+
+model IntakeSource {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  label       String
+  description String?
+  isReferral  Boolean  @default(false)
+  feeBearing  Boolean  @default(false)
+  sortOrder   Int      @default(0)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  intakes Intake[]
+
+  @@index([isActive, sortOrder])
+}
+
+// ---------------------------------------------------------------------------
+// Partner — ClaimSaver+, thePolicyLine, attorney firms
+// ---------------------------------------------------------------------------
+
+model Partner {
+  id             String   @id @default(cuid())
+  slug           String   @unique
+  name           String
+  brand          String?
+  contactName    String?
+  contactEmail   String?
+  referralCode   String   @unique
+  webhookSecret  String?
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  referrals Referral[]
+
+  @@index([isActive])
+}
+
+// ---------------------------------------------------------------------------
+// Dynamic form schema per claim type
+// ---------------------------------------------------------------------------
+
+model IntakeForm {
+  id          String    @id @default(cuid())
+  claimType   String    @unique
+  title       String
+  description String?
+  schemaJson  String
+  uplNotice   String
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  checklists ChecklistTemplate[]
+}
+
+// ---------------------------------------------------------------------------
+// Configurable document checklist (not hardcoded in UI)
+// ---------------------------------------------------------------------------
+
+model ChecklistTemplate {
+  id         String    @id @default(cuid())
+  claimType  String
+  formId     String?
+  form       IntakeForm? @relation(fields: [formId], references: [id])
+  name       String
+  isDefault  Boolean   @default(true)
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+
+  items ChecklistItemDef[]
+
+  @@index([claimType, isDefault])
+}
+
+model ChecklistItemDef {
+  id                    String   @id @default(cuid())
+  templateId            String
+  template              ChecklistTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  slug                  String
+  label                 String
+  helpText              String?
+  required              Boolean  @default(true)
+  sortOrder             Int      @default(0)
+  /// OWNER | RENTER | REFERRAL | ALL
+  appliesWhen           String   @default("ALL")
+  canDeferToBlackletter Boolean  @default(false)
+  canDeferToBlackmirror Boolean  @default(false)
+  fieldTaskTitle        String?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  instances IntakeChecklistItem[]
+
+  @@unique([templateId, slug])
+  @@index([templateId, sortOrder])
+}
+
+// ---------------------------------------------------------------------------
+// Intake — umbrella record for every prospective claimant
+// ---------------------------------------------------------------------------
+
+model Intake {
+  id           String       @id @default(cuid())
+  intakeNumber String       @unique
+  status       String @default("SUBMITTED")
+  claimType    String
+
+  sourceId String
+  source   IntakeSource @relation(fields: [sourceId], references: [id])
+
+  firstName              String
+  lastName               String
+  email                  String
+  phone                  String
+  preferredContactMethod String @default("PHONE")
+  mailingAddress         String?
+
+  dateOfLoss      DateTime?
+  lossType        String?
+  lossDescription String?
+  propertyAddress String?
+  city            String?
+  zipCode         String?
+  county          String?
+  occupancy       String?
+
+  policyNumber        String?
+  carrierName         String?
+  insurerClaimNumber  String?
+  priorClaimNumber    String?
+  priorAdjusterName   String?
+  priorAdjusterPhone  String?
+
+  accidentLocation  String?
+  injuryDescription String?
+  vehicleYear       String?
+  vehicleMake       String?
+  vehicleModel      String?
+
+  denialDate   DateTime?
+  denialReason String?
+
+  mortgageeName    String?
+  ownershipProofNote String?
+
+  formAnswers          String?
+  sourceDetail         String?
+  campaignName         String?
+  disclosureAccepted   Boolean   @default(false)
+  disclosureSignedAt   DateTime?
+  disclosureName       String?
+
+  submittedAt DateTime  @default(now())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  createdById String?
+  createdBy   Staff?  @relation("IntakeCreatedBy", fields: [createdById], references: [id])
+
+  referral       Referral?
+  decisions      TriageDecision[]
+  documents      IntakeDocument[]
+  checklistItems IntakeChecklistItem[]
+  handoffs       HandoffLog[]
+
+  @@index([status, submittedAt])
+  @@index([sourceId, submittedAt])
+  @@index([claimType, status])
+  @@index([email])
+}
+
+model Referral {
+  id                 String   @id @default(cuid())
+  intakeId           String   @unique
+  intake             Intake   @relation(fields: [intakeId], references: [id], onDelete: Cascade)
+  partnerId          String?
+  partner            Partner? @relation(fields: [partnerId], references: [id])
+  referringContact   String?
+  referringEmail     String?
+  referringPhone     String?
+  feeTerms           String?
+  feePercent         Float?
+  feeAmount          Float?
+  taggedForLedger    Boolean  @default(false)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@index([partnerId])
+}
+
+model TriageDecision {
+  id          String        @id @default(cuid())
+  intakeId    String
+  intake      Intake        @relation(fields: [intakeId], references: [id], onDelete: Cascade)
+  outcome     String
+  reasonCode  String?
+  reasonNote  String?
+  decidedById String
+  decidedBy   Staff         @relation("TriageDecidedBy", fields: [decidedById], references: [id])
+  decidedAt   DateTime      @default(now())
+
+  @@index([intakeId, decidedAt])
+}
+
+model IntakeChecklistItem {
+  id          String              @id @default(cuid())
+  intakeId    String
+  intake      Intake              @relation(fields: [intakeId], references: [id], onDelete: Cascade)
+  itemDefId   String
+  itemDef     ChecklistItemDef    @relation(fields: [itemDefId], references: [id])
+  status      String @default("MISSING")
+  note        String?
+  updatedAt   DateTime            @updatedAt
+
+  documents IntakeDocument[]
+
+  @@unique([intakeId, itemDefId])
+  @@index([intakeId, status])
+}
+
+model IntakeDocument {
+  id             String               @id @default(cuid())
+  intakeId       String
+  intake         Intake               @relation(fields: [intakeId], references: [id], onDelete: Cascade)
+  checklistItemId String?
+  checklistItem  IntakeChecklistItem? @relation(fields: [checklistItemId], references: [id])
+  fileName       String
+  fileUrl        String
+  fileSizeBytes  Int
+  mimeType       String
+  uploadedById   String?
+  uploadedBy     Staff?               @relation("DocumentUploader", fields: [uploadedById], references: [id])
+  uploadedAt     DateTime             @default(now())
+  carriedToClaim Boolean              @default(false)
+
+  @@index([intakeId])
+}
+
+model HandoffLog {
+  id                 String        @id @default(cuid())
+  intakeId           String
+  intake             Intake        @relation(fields: [intakeId], references: [id], onDelete: Cascade)
+  status             String @default("PENDING")
+  blackboxClaimId    String?
+  blackboxClaimNumber String?
+  fieldTasksCreated  Int           @default(0)
+  ledgerTagged       Boolean       @default(false)
+  payloadJson        String?
+  responseJson       String?
+  errorMessage       String?
+  performedById      String?
+  performedBy        Staff?        @relation("HandoffBy", fields: [performedById], references: [id])
+  createdAt          DateTime      @default(now())
+
+  @@index([intakeId, createdAt])
+}
+
+model WebhookEvent {
+  id          String        @id @default(cuid())
+  channel     String
+  status      String @default("RECEIVED")
+  payloadJson String
+  intakeId    String?
+  errorMessage String?
+  receivedAt  DateTime      @default(now())
+
+  @@index([channel, receivedAt])
+}
