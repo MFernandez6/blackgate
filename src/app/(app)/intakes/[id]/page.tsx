@@ -12,8 +12,11 @@ import {
 import { formatDate, formatDateTime, fullName } from "@/lib/utils";
 import { GateStatus } from "@/components/intake/gate-status";
 import { ChecklistTracker } from "@/components/intake/checklist-tracker";
+import { LetterTrail } from "@/components/intake/letter-trail";
 import { TriagePanel } from "@/components/triage/triage-panel";
 import { Badge } from "@/components/ui/badge";
+
+export const dynamic = "force-dynamic";
 
 export default async function IntakeDetailPage({
   params,
@@ -167,6 +170,8 @@ export default async function IntakeDetailPage({
               </ul>
             )}
           </section>
+
+          <LetterTrail intakeNumber={intake.intakeNumber} />
 
           <section className="panel p-5">
             <p className="eyebrow mb-3">Handoff log</p>

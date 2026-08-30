@@ -1,8 +1,10 @@
+import Link from "next/link";
 import { PublicIntakeForm } from "@/components/intake/public-intake-form";
 import { BlackgateMark } from "@/components/brand/blackgate-mark";
 import { UPL_NOTICE } from "@/lib/constants";
 import { listActiveSources } from "@/lib/sources";
-import Link from "next/link";
+
+export const dynamic = "force-dynamic";
 
 export default async function IntakePage({
   searchParams,

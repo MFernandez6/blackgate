@@ -2,6 +2,8 @@ import { PublicIntakeForm } from "@/components/intake/public-intake-form";
 import { BlackgateMark } from "@/components/brand/blackgate-mark";
 import { listActiveSources } from "@/lib/sources";
 
+export const dynamic = "force-dynamic";
+
 export default async function EmbedPage({
   searchParams,
 }: {

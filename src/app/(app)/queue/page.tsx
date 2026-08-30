@@ -7,6 +7,8 @@ import { GateStatus } from "@/components/intake/gate-status";
 import { Badge } from "@/components/ui/badge";
 import type { IntakeStatus } from "@/lib/types";
 
+export const dynamic = "force-dynamic";
+
 export default async function QueuePage({
   searchParams,
 }: {

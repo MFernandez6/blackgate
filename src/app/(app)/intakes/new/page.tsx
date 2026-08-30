@@ -1,6 +1,8 @@
 import { StaffIntakeForm } from "@/components/intake/staff-intake-form";
 import { listActiveSources } from "@/lib/sources";
 
+export const dynamic = "force-dynamic";
+
 export default async function NewIntakePage() {
   const sources = await listActiveSources();
   return (

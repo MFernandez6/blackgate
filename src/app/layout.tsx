@@ -22,6 +22,8 @@ const cinzel = Cinzel({
   display: "swap",
 });
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "BLACKGATE™ — Blackline Public Adjusters LLC",
   description:

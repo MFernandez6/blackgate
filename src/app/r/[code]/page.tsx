@@ -6,6 +6,8 @@ import { PublicIntakeForm } from "@/components/intake/public-intake-form";
 import { BlackgateMark } from "@/components/brand/blackgate-mark";
 import { UPL_NOTICE } from "@/lib/constants";
 
+export const dynamic = "force-dynamic";
+
 const CODE_TO_SOURCE: Record<string, string> = {
   claimsaver: "referral_claimsaver",
   policyline: "referral_policyline",

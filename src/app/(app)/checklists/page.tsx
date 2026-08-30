@@ -2,6 +2,8 @@ import { prisma } from "@/lib/prisma";
 import { CLAIM_TYPE_LABELS } from "@/lib/constants";
 import { Badge } from "@/components/ui/badge";
 
+export const dynamic = "force-dynamic";
+
 export default async function ChecklistsPage() {
   const templates = await prisma.checklistTemplate.findMany({
     include: { items: { orderBy: { sortOrder: "asc" } } },
