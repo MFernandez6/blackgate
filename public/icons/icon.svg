@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" fill="#05070B"/>
+  <rect x="32" y="32" width="448" height="448" fill="none" stroke="#C6A85B" stroke-width="8"/>
+
+  <path d="M140 204 A116 116 0 0 1 372 204" fill="none" stroke="#E8B84A" stroke-width="8"/>
+  <line x1="140" y1="204" x2="140" y2="308" stroke="#E8B84A" stroke-width="8"/>
+  <line x1="372" y1="204" x2="372" y2="308" stroke="#E8B84A" stroke-width="8"/>
+  <line x1="140" y1="308" x2="372" y2="308" stroke="#E8B84A" stroke-width="8"/>
+  <line x1="256" y1="148" x2="256" y2="308" stroke="#E8B84A" stroke-width="4"/>
+  <text x="256" y="414" text-anchor="middle" font-family="Georgia, Times New Roman, serif" font-size="70" font-weight="700" fill="#E8B84A" letter-spacing="12">BG</text>
+</svg>

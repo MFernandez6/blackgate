@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, JetBrains_Mono, Cinzel } from "next/font/google";
 import { Providers } from "@/components/providers";
 import "./globals.css";
@@ -28,6 +28,23 @@ export const metadata: Metadata = {
   title: "BLACKGATE™ — Blackline Public Adjusters LLC",
   description:
     "Intake infrastructure for every claim entering BLACKLINE — referral, partner, or cold.",
+  applicationName: "BLACKGATE",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "BLACKGATE",
+  },
+  icons: {
+    icon: [
+      { url: "/icons/icon.svg", type: "image/svg+xml" },
+      { url: "/icons/icon-192.png", sizes: "192x192", type: "image/png" },
+    ],
+    apple: [{ url: "/icons/icon-180.png", sizes: "180x180", type: "image/png" }],
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#05070b",
 };
 
 export default function RootLayout({
