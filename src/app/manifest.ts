@@ -6,7 +6,8 @@ export default function manifest(): MetadataRoute.Manifest {
     short_name: "BLACKGATE",
     description:
       "Intake infrastructure for every claim entering BLACKLINE",
-    start_url: "/queue",
+    start_url: "/",
+    scope: "/",
     display: "standalone",
     background_color: "#05070b",
     theme_color: "#05070b",

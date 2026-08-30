@@ -1,4 +1,5 @@
 import Link from "next/link";
+import type { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { checklistProgress } from "@/lib/checklists";
 import { CLAIM_TYPE_LABELS } from "@/lib/constants";
@@ -15,7 +16,12 @@ export default async function QueuePage({
   searchParams: { status?: string; source?: string };
 }) {
   const status = searchParams.status as IntakeStatus | undefined;
-  const intakes = await prisma.intake.findMany({
+  type QueueIntake = Prisma.IntakeGetPayload<{
+    include: { source: true; checklistItems: { include: { itemDef: true } } };
+  }>;
+  let intakes: QueueIntake[] = [];
+  try {
+    intakes = await prisma.intake.findMany({
     where: {
       ...(status ? { status } : {}),
       ...(searchParams.source ? { source: { slug: searchParams.source } } : {}),
@@ -25,7 +31,10 @@ export default async function QueuePage({
       checklistItems: { include: { itemDef: true } },
     },
     orderBy: { submittedAt: "desc" },
-  });
+    });
+  } catch {
+    intakes = [];
+  }
 
   const open = intakes.filter((i) =>
     ["SUBMITTED", "IN_REVIEW", "NEEDS_INFO"].includes(i.status)

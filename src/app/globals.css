@@ -54,6 +54,8 @@
     font-family: var(--font-sans), system-ui, sans-serif;
     background-color: var(--brand-navy);
     color: var(--brand-white);
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
   }
 
   ::selection {
