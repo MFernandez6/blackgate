@@ -142,7 +142,7 @@ async function seedChecklist(claimType: ClaimType, extra: ItemSeed[]) {
             : "Denied-claim intake",
       description: "Dynamic schema — UPL-safe language throughout.",
       schemaJson: formJsonFor(claimType),
-      uplNotice: uplNoticeFor(claimType) || UPL_NOTICE,
+      uplNotice: uplNoticeFor() || UPL_NOTICE,
     },
   });
 

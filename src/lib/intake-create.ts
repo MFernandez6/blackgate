@@ -200,7 +200,8 @@ export async function createIntakeRecord(input: IntakeCreateInput) {
 export function answersFromInput(
   input: IntakeCreateInput
 ): Record<string, unknown> {
-  const { formAnswers: _ignored, ...rest } = input;
+  const rest = { ...input };
+  delete rest.formAnswers;
   return rest;
 }
 

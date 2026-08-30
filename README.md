@@ -65,7 +65,8 @@ SQLite (`prisma/dev.db`) is the local default. Production can point `DATABASE_UR
 | Inbound | `POST /api/webhooks/partner` | Attorney / generic partner |
 | Outbound | BLACKBOX `POST /api/claims/intake` | Promote accepted intake |
 | Outbound | BLACKMIRROR field tasks | Missing damage photos |
-| Outbound | BLACKLEDGER referral tag | Fee-bearing sources |
+| Outbound | BLACKLEDGER `POST /api/referral-tags` | Fee-bearing sources |
+| Inbound | BLACKLEDGER `GET /api/ledger/partners` | Read-only partner list for splits |
 
 When `BLACKBOX_DRY_RUN=1` or no API key is set, promote still closes the loop and writes a `HandoffLog` with a simulated `BL-YY-####` so the staff UI is usable without BLACKBOX running.
 

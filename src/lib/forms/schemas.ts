@@ -188,6 +188,6 @@ export function formJsonFor(claimType: ClaimType): string {
   return JSON.stringify(FORM_SCHEMAS[claimType]);
 }
 
-export function uplNoticeFor(_claimType: ClaimType): string {
+export function uplNoticeFor(): string {
   return UPL_NOTICE;
 }
