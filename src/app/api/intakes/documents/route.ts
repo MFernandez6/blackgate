@@ -57,7 +57,12 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ documents: [] });
   }
 
-  const documents = intake.checklistItems
+  const documents: Array<{
+    documentType: string;
+    status: string;
+    fileUrl: string | null;
+    source: string;
+  }> = intake.checklistItems
     .filter((item) => SLUG_TO_TYPE[item.itemDef.slug])
     .filter((item) => item.status === "COLLECTED" || item.documents.length > 0)
     .map((item) => ({
