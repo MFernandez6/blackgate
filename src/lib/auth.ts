@@ -4,10 +4,18 @@ import { compare } from "bcryptjs";
 import type { StaffRole } from "@/lib/types";
 import { resolveStaffForLogin } from "@/lib/directory";
 import { loginSchema } from "@/lib/schemas/intake";
+import {
+  STAFF_SESSION_MAX_AGE_S,
+  STAFF_SESSION_UPDATE_AGE_S,
+} from "@/lib/session-security";
 
 if (!process.env.NEXTAUTH_URL && process.env.VERCEL_URL) {
   process.env.NEXTAUTH_URL = `https://${process.env.VERCEL_URL}`;
 }
+
+const useSecureCookies =
+  process.env.NEXTAUTH_URL?.startsWith("https://") ||
+  process.env.VERCEL === "1";
 
 declare module "next-auth" {
   interface Session {
@@ -36,10 +44,24 @@ declare module "next-auth/jwt" {
 
 export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET ?? process.env.AUTH_SECRET,
+  useSecureCookies,
   session: {
     strategy: "jwt",
-    maxAge: 8 * 60 * 60,
-    updateAge: 30 * 60,
+    maxAge: STAFF_SESSION_MAX_AGE_S,
+    updateAge: STAFF_SESSION_UPDATE_AGE_S,
+  },
+  cookies: {
+    sessionToken: {
+      name: useSecureCookies
+        ? "__Secure-next-auth.session-token"
+        : "next-auth.session-token",
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: useSecureCookies,
+      },
+    },
   },
   pages: {
     signIn: "/login",

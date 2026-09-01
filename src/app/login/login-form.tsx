@@ -12,14 +12,23 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ErrorBanner } from "@/components/ui/error-banner";
 import { BlackgateMark } from "@/components/brand/blackgate-mark";
+import { STAFF_CLOSED_KEY, STAFF_IDLE_MS, STAFF_LOCK_KEY } from "@/lib/session-security";
 
 type LoginValues = z.infer<typeof loginSchema>;
 
 export default function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const idleNotice = searchParams.get("reason") === "idle";
+  const leaveReason = searchParams.get("reason");
   const authError = searchParams.get("error");
+  const leaveNotice =
+    leaveReason === "idle"
+      ? `Signed out after ${Math.round(STAFF_IDLE_MS / 60000)} minutes of inactivity. Sign in again to continue.`
+      : leaveReason === "closed"
+        ? "Signed out because the last BLACKGATE window closed. Sign in again to continue."
+        : leaveReason === "expired"
+          ? "Session expired. Sign in again to continue."
+          : null;
   const [error, setError] = useState(() => {
     if (authError === "Configuration" || authError === "Callback") {
       return "Sign-in could not finish. On Vercel, set NEXTAUTH_SECRET and NEXTAUTH_URL (your live BLACKGATE URL), plus DATABASE_URL from BLACKBOX.";
@@ -51,6 +60,12 @@ export default function LoginForm() {
           : "Sign-in rejected. Use your BLACKBOX employee email and password."
       );
       return;
+    }
+    try {
+      sessionStorage.setItem(STAFF_LOCK_KEY, "1");
+      localStorage.removeItem(STAFF_CLOSED_KEY);
+    } catch {
+      // private mode
     }
     router.push("/queue");
     router.refresh();
@@ -90,11 +105,8 @@ export default function LoginForm() {
 
         <div className="hairline mb-8" />
 
-        {idleNotice ? (
-          <ErrorBanner
-            message="Signed out after 5 minutes of inactivity. Sign in again to continue."
-            className="mb-6"
-          />
+        {leaveNotice ? (
+          <ErrorBanner message={leaveNotice} className="mb-6" />
         ) : null}
 
         {error ? (
@@ -146,7 +158,7 @@ export default function LoginForm() {
         </form>
 
         <p className="mt-8 text-center font-sans text-[10px] font-bold uppercase tracking-[0.2em] text-brand-slate">
-          Authorized personnel only · session encrypted
+          Authorized personnel only · idle sign-out 5 min · window close ends session
         </p>
       </div>
     </div>
