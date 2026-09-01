@@ -48,13 +48,13 @@ npm run dev
 
 Open [http://localhost:3002](http://localhost:3002).
 
-| Role | Email | Password |
-|---|---|---|
-| Admin | `miguel@blacklinepa.com` | `Password123!` |
-| Gatekeeper | `gate@blacklinepa.com` | `Password123!` |
-| Intake staff | `intake@blacklinepa.com` | `Password123!` |
+Employees sign in with the **same email and password as BLACKBOX** (shared `Adjuster` directory). Set `DATABASE_URL` and `DIRECT_URL` to the BLACKBOX Supabase pooler — locally and on Vercel.
 
-SQLite (`prisma/dev.db`) is the local default. Production can point `DATABASE_URL` at the shared Supabase pooler used by BLACKBOX / BLACKMIRROR.
+Lookup rows (sources, checklists) can be created without wiping claims:
+
+```bash
+npm run db:bootstrap
+```
 
 ## Integrations
 

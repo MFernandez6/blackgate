@@ -2,7 +2,7 @@ import { type NextAuthOptions, getServerSession } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { compare } from "bcryptjs";
 import type { StaffRole } from "@/lib/types";
-import { prisma } from "@/lib/prisma";
+import { resolveStaffForLogin } from "@/lib/directory";
 import { loginSchema } from "@/lib/schemas/intake";
 
 declare module "next-auth" {
@@ -50,20 +50,23 @@ export const authOptions: NextAuthOptions = {
         const parsed = loginSchema.safeParse(credentials);
         if (!parsed.success) return null;
 
-        const staff = await prisma.staff.findUnique({
-          where: { email: parsed.data.email.toLowerCase() },
-        });
-        if (!staff || !staff.isActive) return null;
+        try {
+          const staff = await resolveStaffForLogin(parsed.data.email);
+          if (!staff) return null;
 
-        const valid = await compare(parsed.data.password, staff.passwordHash);
-        if (!valid) return null;
+          const valid = await compare(parsed.data.password, staff.passwordHash);
+          if (!valid) return null;
 
-        return {
-          id: staff.id,
-          email: staff.email,
-          name: staff.name,
-          role: staff.role as StaffRole,
-        };
+          return {
+            id: staff.id,
+            email: staff.email,
+            name: staff.name,
+            role: staff.role,
+          };
+        } catch (err) {
+          console.error("[BLACKGATE] sign-in directory error", err);
+          throw new Error("DIRECTORY_UNAVAILABLE");
+        }
       },
     }),
   ],
@@ -78,13 +81,10 @@ export const authOptions: NextAuthOptions = {
         typeof token.email === "string" ? token.email.toLowerCase() : null;
       if (email) {
         try {
-          const staff = await prisma.staff.findFirst({
-            where: { email, isActive: true },
-            select: { id: true, role: true },
-          });
+          const staff = await resolveStaffForLogin(email);
           if (staff) {
             token.id = staff.id;
-            token.role = staff.role as StaffRole;
+            token.role = staff.role;
           }
         } catch {
           // keep existing token if DB is briefly unavailable

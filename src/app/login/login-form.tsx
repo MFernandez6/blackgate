@@ -36,7 +36,11 @@ export default function LoginForm() {
       redirect: false,
     });
     if (res?.error) {
-      setError("Credentials rejected. Access denied.");
+      setError(
+        res.error === "DIRECTORY_UNAVAILABLE"
+          ? "The employee directory is unreachable. Try again in a moment."
+          : "Sign-in rejected. Use your BLACKBOX employee email and password."
+      );
       return;
     }
     router.push("/queue");
@@ -61,8 +65,8 @@ export default function LoginForm() {
             className="justify-center font-serif text-4xl font-bold tracking-[0.22em] text-brand-gold sm:text-5xl"
           />
           <p className="mt-4 text-sm leading-relaxed text-brand-white/80">
-            Gatekeeper and intake staff only. The public form lives at /intake
-            and does not use this sign-in.
+            Employee sign-in — same email and password as BLACKBOX. The public
+            form lives at /intake and does not use this screen.
           </p>
         </div>
 

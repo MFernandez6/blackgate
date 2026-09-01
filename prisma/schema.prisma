@@ -6,13 +6,16 @@
 // Referral exists only when the source is a referral type.
 
 generator client {
-  provider      = "prisma-client-js"
-  binaryTargets = ["native", "rhel-openssl-3.0.x"]
+  provider        = "prisma-client-js"
+  binaryTargets   = ["native", "rhel-openssl-3.0.x"]
+  previewFeatures = ["multiSchema"]
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+  schemas   = ["blackgate"]
 }
 
 // SQLite has no native enums. Constrained string values live in src/lib/types.ts.
@@ -24,6 +27,7 @@ datasource db {
 model IntakeNumberSequence {
   year      Int @id
   lastValue Int @default(0)
+  @@schema("blackgate")
 }
 
 // ---------------------------------------------------------------------------
@@ -44,6 +48,7 @@ model Staff {
   triageDecisions  TriageDecision[]  @relation("TriageDecidedBy")
   uploadedDocs     IntakeDocument[]  @relation("DocumentUploader")
   handoffs         HandoffLog[]      @relation("HandoffBy")
+  @@schema("blackgate")
 }
 
 // ---------------------------------------------------------------------------
@@ -65,6 +70,7 @@ model IntakeSource {
   intakes Intake[]
 
   @@index([isActive, sortOrder])
+  @@schema("blackgate")
 }
 
 // ---------------------------------------------------------------------------
@@ -87,6 +93,7 @@ model Partner {
   referrals Referral[]
 
   @@index([isActive])
+  @@schema("blackgate")
 }
 
 // ---------------------------------------------------------------------------
@@ -105,6 +112,7 @@ model IntakeForm {
   updatedAt   DateTime  @updatedAt
 
   checklists ChecklistTemplate[]
+  @@schema("blackgate")
 }
 
 // ---------------------------------------------------------------------------
@@ -124,6 +132,7 @@ model ChecklistTemplate {
   items ChecklistItemDef[]
 
   @@index([claimType, isDefault])
+  @@schema("blackgate")
 }
 
 model ChecklistItemDef {
@@ -147,6 +156,7 @@ model ChecklistItemDef {
 
   @@unique([templateId, slug])
   @@index([templateId, sortOrder])
+  @@schema("blackgate")
 }
 
 // ---------------------------------------------------------------------------
@@ -221,6 +231,7 @@ model Intake {
   @@index([sourceId, submittedAt])
   @@index([claimType, status])
   @@index([email])
+  @@schema("blackgate")
 }
 
 model Referral {
@@ -240,6 +251,7 @@ model Referral {
   updatedAt          DateTime @updatedAt
 
   @@index([partnerId])
+  @@schema("blackgate")
 }
 
 model TriageDecision {
@@ -254,6 +266,7 @@ model TriageDecision {
   decidedAt   DateTime      @default(now())
 
   @@index([intakeId, decidedAt])
+  @@schema("blackgate")
 }
 
 model IntakeChecklistItem {
@@ -270,6 +283,7 @@ model IntakeChecklistItem {
 
   @@unique([intakeId, itemDefId])
   @@index([intakeId, status])
+  @@schema("blackgate")
 }
 
 model IntakeDocument {
@@ -288,6 +302,7 @@ model IntakeDocument {
   carriedToClaim Boolean              @default(false)
 
   @@index([intakeId])
+  @@schema("blackgate")
 }
 
 model HandoffLog {
@@ -307,6 +322,7 @@ model HandoffLog {
   createdAt          DateTime      @default(now())
 
   @@index([intakeId, createdAt])
+  @@schema("blackgate")
 }
 
 model WebhookEvent {
@@ -319,4 +335,5 @@ model WebhookEvent {
   receivedAt  DateTime      @default(now())
 
   @@index([channel, receivedAt])
+  @@schema("blackgate")
 }
