@@ -19,7 +19,16 @@ export default function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const idleNotice = searchParams.get("reason") === "idle";
-  const [error, setError] = useState("");
+  const authError = searchParams.get("error");
+  const [error, setError] = useState(() => {
+    if (authError === "Configuration" || authError === "Callback") {
+      return "Sign-in could not finish. On Vercel, set NEXTAUTH_SECRET and NEXTAUTH_URL (your live BLACKGATE URL), plus DATABASE_URL from BLACKBOX.";
+    }
+    if (authError) {
+      return "Sign-in was interrupted. Use your BLACKBOX employee email and password.";
+    }
+    return "";
+  });
   const {
     register,
     handleSubmit,
@@ -37,8 +46,8 @@ export default function LoginForm() {
     });
     if (res?.error) {
       setError(
-        res.error === "DIRECTORY_UNAVAILABLE"
-          ? "The employee directory is unreachable. Try again in a moment."
+        res.error === "Configuration" || res.error === "Callback"
+          ? "Sign-in could not finish. Set NEXTAUTH_SECRET and NEXTAUTH_URL on Vercel to this site’s URL."
           : "Sign-in rejected. Use your BLACKBOX employee email and password."
       );
       return;

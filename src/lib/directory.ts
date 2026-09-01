@@ -41,34 +41,51 @@ export async function resolveStaffForLogin(email: string) {
 
   if (adjuster?.isActive) {
     const role = mapAdjusterRole(adjuster.role);
-    const staff = await prisma.staff.upsert({
-      where: { email: normalized },
-      create: {
-        name: adjuster.name,
-        email: normalized,
+    try {
+      const staff = await prisma.staff.upsert({
+        where: { email: normalized },
+        create: {
+          name: adjuster.name,
+          email: normalized,
+          passwordHash: adjuster.passwordHash,
+          role,
+          isActive: true,
+        },
+        update: {
+          name: adjuster.name,
+          passwordHash: adjuster.passwordHash,
+          role,
+          isActive: true,
+        },
+      });
+      return {
+        id: staff.id,
+        email: staff.email,
+        name: staff.name,
+        role: staff.role as StaffRole,
         passwordHash: adjuster.passwordHash,
-        role,
-        isActive: true,
-      },
-      update: {
+      };
+    } catch (err) {
+      console.error("[BLACKGATE] staff upsert failed; using Adjuster identity", err);
+      return {
+        id: adjuster.id,
+        email: adjuster.email,
         name: adjuster.name,
-        passwordHash: adjuster.passwordHash,
         role,
-        isActive: true,
-      },
-    });
-    return {
-      id: staff.id,
-      email: staff.email,
-      name: staff.name,
-      role: staff.role as StaffRole,
-      passwordHash: adjuster.passwordHash,
-    };
+        passwordHash: adjuster.passwordHash,
+      };
+    }
   }
 
-  const staff = await prisma.staff.findUnique({
-    where: { email: normalized },
-  });
+  let staff = null;
+  try {
+    staff = await prisma.staff.findUnique({
+      where: { email: normalized },
+    });
+  } catch (err) {
+    console.error("[BLACKGATE] staff lookup failed", err);
+    return null;
+  }
   if (!staff || !staff.isActive) return null;
 
   return {

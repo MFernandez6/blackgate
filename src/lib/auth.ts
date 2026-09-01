@@ -5,6 +5,10 @@ import type { StaffRole } from "@/lib/types";
 import { resolveStaffForLogin } from "@/lib/directory";
 import { loginSchema } from "@/lib/schemas/intake";
 
+if (!process.env.NEXTAUTH_URL && process.env.VERCEL_URL) {
+  process.env.NEXTAUTH_URL = `https://${process.env.VERCEL_URL}`;
+}
+
 declare module "next-auth" {
   interface Session {
     user: {
@@ -31,6 +35,7 @@ declare module "next-auth/jwt" {
 }
 
 export const authOptions: NextAuthOptions = {
+  secret: process.env.NEXTAUTH_SECRET ?? process.env.AUTH_SECRET,
   session: {
     strategy: "jwt",
     maxAge: 8 * 60 * 60,
@@ -38,6 +43,7 @@ export const authOptions: NextAuthOptions = {
   },
   pages: {
     signIn: "/login",
+    error: "/login",
   },
   providers: [
     CredentialsProvider({
@@ -65,7 +71,7 @@ export const authOptions: NextAuthOptions = {
           };
         } catch (err) {
           console.error("[BLACKGATE] sign-in directory error", err);
-          throw new Error("DIRECTORY_UNAVAILABLE");
+          return null;
         }
       },
     }),
