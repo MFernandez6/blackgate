@@ -21,8 +21,8 @@ export default function ErrorPage({
         BLACKGATE could not open this screen
       </h1>
       <p className="mt-3 max-w-md text-sm text-brand-white/70">
-        The home-screen app stays up even when a staff page fails. Try again, or
-        go back to the public intake door.
+        This screen hit an unexpected error. Try again, or return to the public
+        intake door.
       </p>
       <div className="mt-8 flex flex-wrap justify-center gap-3">
         <Button type="button" variant="amber" onClick={() => reset()}>

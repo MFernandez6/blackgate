@@ -5,8 +5,15 @@ const globalForPrisma = globalThis as unknown as {
 };
 
 function createPrismaClient() {
+  const url = process.env.DATABASE_URL;
+  if (!url || url.startsWith("file:")) {
+    throw new Error(
+      "DATABASE_URL must be the shared BLACKBOX Postgres pooler URL."
+    );
+  }
   return new PrismaClient({
     log: process.env.NODE_ENV === "development" ? ["error", "warn"] : ["error"],
+    datasources: { db: { url } },
   });
 }
 

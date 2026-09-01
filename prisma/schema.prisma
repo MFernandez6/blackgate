@@ -12,10 +12,9 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
-  schemas   = ["blackgate"]
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  schemas  = ["blackgate"]
 }
 
 // SQLite has no native enums. Constrained string values live in src/lib/types.ts.

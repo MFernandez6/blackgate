@@ -20,9 +20,15 @@ export default async function ReferralLinkPage({
   params: { code: string };
 }) {
   const code = params.code.toLowerCase();
-  const partner = await prisma.partner.findUnique({
-    where: { referralCode: code },
-  });
+  let partner: { slug: string; name: string; referralCode: string } | null = null;
+  try {
+    partner = await prisma.partner.findUnique({
+      where: { referralCode: code },
+      select: { slug: true, name: true, referralCode: true },
+    });
+  } catch (err) {
+    console.error("[BLACKGATE] referral partner lookup failed", err);
+  }
   const sourceSlug = partner
     ? partner.slug === "claimsaver"
       ? "referral_claimsaver"
