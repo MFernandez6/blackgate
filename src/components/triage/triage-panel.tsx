@@ -133,8 +133,8 @@ export function TriagePanel({
             One-click promote creates the BLACKBOX claim, carries collected
             documents, and closes the intake loop.
             {!checklistComplete
-              ? " Required checklist items must be collected, generated, waived, or flagged first."
-              : ""}
+              ? " Required items still need a status — collected, generated later, waived, N/A, or field task. A field task does not hold the handoff; inspection can happen after the file is open."
+              : " Field tasks stay open after promote — they do not hold this handoff."}
           </p>
           <Button
             type="button"

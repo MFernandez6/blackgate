@@ -100,7 +100,8 @@ export function ChecklistTracker({
                   tone={
                     item.status === "COLLECTED" ||
                     item.status === "TO_BE_GENERATED" ||
-                    item.status === "WAIVED"
+                    item.status === "WAIVED" ||
+                    item.status === "NOT_APPLICABLE"
                       ? "gold"
                       : item.status === "FLAGGED_FIELD"
                         ? "amber"
@@ -171,7 +172,7 @@ export function ChecklistTracker({
                     variant="amber"
                     onClick={() => void changeStatus(item.id, "FLAGGED_FIELD")}
                   >
-                    BLACKMIRROR field task
+                    Field task — does not hold handoff
                   </Button>
                 ) : null}
               </div>

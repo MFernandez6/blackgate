@@ -2,9 +2,12 @@ import type { Prisma } from "@prisma/client";
 import type { ChecklistItemStatus, Occupancy } from "@/lib/types";
 import { prisma } from "@/lib/prisma";
 
+/** Statuses that do not block promote. Field task is allowed: intake is
+ *  the start of the file, and a site visit often happens after handoff. */
 const SATISFIED: ChecklistItemStatus[] = [
   "COLLECTED",
   "TO_BE_GENERATED",
+  "FLAGGED_FIELD",
   "WAIVED",
   "NOT_APPLICABLE",
 ];

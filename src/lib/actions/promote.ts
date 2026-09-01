@@ -43,7 +43,7 @@ export async function promoteIntakeAction(
     if (!progress.complete) {
       return {
         ok: false,
-        error: `Checklist is ${progress.collected}/${progress.total}. Collect, generate, waive, or flag remaining required items.`,
+        error: `Checklist is ${progress.collected}/${progress.total}. Collect, generate, waive, mark N/A, or flag a field task on remaining required items.`,
       };
     }
 
