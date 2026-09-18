@@ -1,9 +1,8 @@
 /**
  * BLACKBOX handoff — instantiate a claim from an accepted intake.
  *
- * Expected BLACKBOX contract (not yet shipped in blackbox; reserved at
- * /api/claims/intake): POST JSON matching fnolIntakeSchema, return
- * { id, claimNumber }. Documents follow via POST /api/upload.
+ * Contract: POST /api/claims/intake → { id, claimNumber }.
+ * Documents follow via POST /api/claims/intake/documents.
  */
 
 export type BlackboxClaimPayload = {
@@ -116,7 +115,15 @@ export async function attachDocumentToBlackboxClaim(opts: {
   if (!base) return { ok: false, error: "BLACKBOX_API_URL is not configured." };
 
   try {
-    const res = await fetch(`${base}/api/upload`, {
+    const origin = (process.env.NEXTAUTH_URL ?? "http://localhost:3002").replace(
+      /\/$/,
+      ""
+    );
+    const absoluteUrl = /^https?:\/\//i.test(opts.fileUrl)
+      ? opts.fileUrl
+      : `${origin}${opts.fileUrl.startsWith("/") ? "" : "/"}${opts.fileUrl}`;
+
+    const res = await fetch(`${base}/api/claims/intake/documents`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -125,7 +132,7 @@ export async function attachDocumentToBlackboxClaim(opts: {
       body: JSON.stringify({
         claimId: opts.claimId,
         fileName: opts.fileName,
-        fileUrl: opts.fileUrl,
+        fileUrl: absoluteUrl,
         mimeType: opts.mimeType,
         docType: "OTHER",
         source: "BLACKGATE",
