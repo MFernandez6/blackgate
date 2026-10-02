@@ -75,9 +75,9 @@ export default async function QueuePage({
         </div>
       </div>
 
-      <div className="overflow-x-auto border border-brand-white/10">
+      <div className="overflow-x-auto border border-brand-gold/15 rounded-2xl">
         <table className="w-full min-w-[860px] text-left text-sm">
-          <thead className="border-b border-brand-white/10 bg-brand-navy-deep/60">
+          <thead className="border-b border-brand-white/10 bg-brand-navy/60">
             <tr className="eyebrow">
               <th className="px-4 py-3">Intake</th>
               <th className="px-4 py-3">Claimant</th>
@@ -124,7 +124,7 @@ export default async function QueuePage({
                         <span className="font-mono text-xs text-brand-amber">
                           {progress.collected}/{progress.total}
                         </span>
-                        <div className="h-1.5 w-16 border border-brand-white/10">
+                        <div className="h-1.5 w-16 border border-brand-gold/15 rounded-2xl">
                           <div
                             className="h-full bg-brand-amber"
                             style={{ width: `${progress.percent}%` }}

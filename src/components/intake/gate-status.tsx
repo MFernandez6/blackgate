@@ -24,7 +24,7 @@ export function GateStatus({
     >
       <span
         className={cn(
-          "h-1.5 w-1.5",
+          "h-1.5 w-1.5 rounded-full",
           open && "animate-gate-pulse bg-brand-amber",
           !open && !declined && "bg-brand-gold",
           declined && "bg-denied"

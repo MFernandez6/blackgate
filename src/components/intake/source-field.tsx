@@ -32,7 +32,7 @@ export function SourceField({
   const selected = sources.find((s) => s.slug === value);
 
   return (
-    <div className="space-y-3 border border-brand-amber/30 bg-brand-amber/5 p-4">
+    <div className="space-y-3 rounded-2xl border border-brand-amber/30 bg-brand-amber/5 p-4">
       <div className="flex items-center justify-between gap-3">
         <Label htmlFor={id} className="text-brand-amber">
           How did you hear about us?

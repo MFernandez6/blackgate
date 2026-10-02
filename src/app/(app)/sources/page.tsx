@@ -62,9 +62,9 @@ export default async function SourcesPage() {
         </div>
       </div>
 
-      <div className="overflow-x-auto border border-brand-white/10">
+      <div className="overflow-x-auto border border-brand-gold/15 rounded-2xl">
         <table className="w-full min-w-[720px] text-left text-sm">
-          <thead className="border-b border-brand-white/10 bg-brand-navy-deep/60">
+          <thead className="border-b border-brand-white/10 bg-brand-navy/60">
             <tr className="eyebrow">
               <th className="px-4 py-3">Source</th>
               <th className="px-4 py-3">Kind</th>
@@ -102,7 +102,7 @@ export default async function SourcesPage() {
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-2">
                     <span className="font-mono text-xs">{row.conversion}%</span>
-                    <div className="h-1.5 w-16 border border-brand-white/10">
+                    <div className="h-1.5 w-16 border border-brand-gold/15 rounded-2xl">
                       <div
                         className="h-full bg-brand-gold"
                         style={{ width: `${row.conversion}%` }}

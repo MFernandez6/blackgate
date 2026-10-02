@@ -326,7 +326,7 @@ export function PublicIntakeForm({
           <label className="flex items-start gap-3 text-sm text-brand-white/85">
             <input
               type="checkbox"
-              className="mt-1 accent-[#C6A85B]"
+              className="mt-1 accent-brand-gold"
               checked={disclosureAccepted}
               onChange={(e) => setDisclosureAccepted(e.target.checked)}
             />

@@ -6,13 +6,6 @@ import { UPL_NOTICE } from "@/lib/constants";
 export default function HomePage() {
   return (
     <div className="relative min-h-screen">
-      <div
-        className="pointer-events-none absolute inset-0"
-        style={{
-          background:
-            "radial-gradient(ellipse 70% 45% at 50% -10%, rgba(232,184,74,0.12), transparent)",
-        }}
-      />
       <header className="relative mx-auto flex max-w-5xl items-center justify-between px-6 py-6">
         <BlackgateMark className="font-serif text-xl font-bold tracking-[0.2em] text-brand-gold" />
         <Link

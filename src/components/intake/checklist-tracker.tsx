@@ -77,7 +77,7 @@ export function ChecklistTracker({
             {progress.collected}/{progress.total} collected
           </p>
         </div>
-        <div className="h-2 w-40 border border-brand-white/10 bg-brand-navy-deep">
+        <div className="h-2 w-40 overflow-hidden rounded-full border border-brand-gold/15 bg-brand-navy-deep">
           <div
             className="h-full bg-brand-amber"
             style={{ width: `${progress.percent}%` }}
@@ -85,7 +85,7 @@ export function ChecklistTracker({
         </div>
       </div>
 
-      <ul className="divide-y divide-brand-white/10 border border-brand-white/10">
+      <ul className="divide-y divide-brand-white/10 border border-brand-gold/15 rounded-2xl">
         {items.map((item) => (
           <li key={item.id} className="grid gap-3 px-4 py-4 md:grid-cols-[1fr_auto] md:items-start">
             <div>

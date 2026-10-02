@@ -184,7 +184,7 @@ export function StaffIntakeForm({ sources }: Props) {
       </div>
 
       <label className="flex items-start gap-3 text-sm text-brand-white/80">
-        <input type="checkbox" name="disclosureAccepted" className="mt-1 accent-[#C6A85B]" required />
+        <input type="checkbox" name="disclosureAccepted" className="mt-1 accent-brand-gold" required />
         <span>
           Claimant acknowledged the intake disclosure (read aloud if this is a
           phone or walk-in). {ENGAGEMENT_DISCLOSURE}
