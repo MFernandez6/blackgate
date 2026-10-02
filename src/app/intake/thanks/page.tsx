@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { BlackgateMark } from "@/components/brand/blackgate-mark";
+import { BlacklineLogo } from "@/components/brand/blackline-mark";
 
 export default function ThanksPage({
   searchParams,
@@ -8,7 +8,7 @@ export default function ThanksPage({
 }) {
   return (
     <div className="flex min-h-screen flex-col items-center justify-center px-6 text-center">
-      <BlackgateMark className="font-serif text-2xl font-bold tracking-[0.2em] text-brand-gold" />
+      <BlacklineLogo className="w-48" priority />
       <p className="eyebrow mt-8">Gate received</p>
       <h1 className="mt-3 font-serif text-3xl text-brand-gold">
         Your intake is on file

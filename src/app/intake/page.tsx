@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { PublicIntakeForm } from "@/components/intake/public-intake-form";
-import { BlackgateMark } from "@/components/brand/blackgate-mark";
+import { BlacklineMark } from "@/components/brand/blackline-mark";
 import { UPL_NOTICE } from "@/lib/constants";
 import { listActiveSources } from "@/lib/sources";
 
@@ -19,8 +19,11 @@ export default async function IntakePage({
   return (
     <div className="min-h-screen bg-brand-navy">
       <header className="mx-auto flex max-w-3xl items-center justify-between px-6 py-6">
-        <Link href="/">
-          <BlackgateMark className="font-serif text-lg font-bold tracking-[0.2em] text-brand-gold" />
+        <Link href="/" className="flex items-center gap-3">
+          <BlacklineMark size={30} />
+          <span className="font-serif text-lg font-bold tracking-[0.2em] text-brand-gold">
+            BLACKLINE
+          </span>
         </Link>
         <p className="eyebrow">Public intake</p>
       </header>

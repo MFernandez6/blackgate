@@ -3,7 +3,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { listActiveSources } from "@/lib/sources";
 import { PublicIntakeForm } from "@/components/intake/public-intake-form";
-import { BlackgateMark } from "@/components/brand/blackgate-mark";
+import { BlacklineMark } from "@/components/brand/blackline-mark";
 import { UPL_NOTICE } from "@/lib/constants";
 
 export const dynamic = "force-dynamic";
@@ -45,8 +45,11 @@ export default async function ReferralLinkPage({
   return (
     <div className="min-h-screen bg-brand-navy">
       <header className="mx-auto flex max-w-3xl items-center justify-between px-6 py-6">
-        <Link href="/">
-          <BlackgateMark className="font-serif text-lg font-bold tracking-[0.2em] text-brand-gold" />
+        <Link href="/" className="flex items-center gap-3">
+          <BlacklineMark size={30} />
+          <span className="font-serif text-lg font-bold tracking-[0.2em] text-brand-gold">
+            BLACKLINE
+          </span>
         </Link>
         <p className="eyebrow">
           {partner ? `Referred by ${partner.name}` : "Referral intake"}
