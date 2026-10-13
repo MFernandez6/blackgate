@@ -2,8 +2,10 @@
 
 import { SessionProvider } from "next-auth/react";
 import { Toaster } from "sonner";
+import { useTheme } from "@/lib/use-theme";
 
 export function Providers({ children }: { children: React.ReactNode }) {
+  const { theme } = useTheme();
   return (
     <SessionProvider
       refetchOnWindowFocus
@@ -12,7 +14,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
     >
       {children}
       <Toaster
-        theme="dark"
+        theme={theme}
         position="bottom-right"
         toastOptions={{
           style: {
