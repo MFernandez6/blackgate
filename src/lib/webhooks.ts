@@ -1,5 +1,6 @@
 import type { LossType } from "@/lib/types";
 import { prisma } from "@/lib/prisma";
+import { safeEqual } from "@/lib/security/safe-compare";
 import { webhookIntakeSchema } from "@/lib/schemas/intake";
 import { createIntakeRecord } from "@/lib/intake-create";
 
@@ -22,7 +23,7 @@ export async function ingestWebhook(opts: {
   providedSecret: string | null;
   body: unknown;
 }) {
-  if (!opts.secret || opts.providedSecret !== opts.secret) {
+  if (!opts.secret || !opts.providedSecret || !safeEqual(opts.providedSecret, opts.secret)) {
     await prisma.webhookEvent.create({
       data: {
         channel: opts.channel,
