@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { getSession, canEditIntake } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { storeIntakeDocument } from "@/lib/storage";
+import { storeIntakeDocument, UnsupportedUploadError } from "@/lib/storage";
 
 export async function POST(req: Request) {
   const session = await getSession();
@@ -25,7 +25,18 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: false, error: "Intake not found." }, { status: 404 });
   }
 
-  const stored = await storeIntakeDocument(intakeId, file);
+  let stored;
+  try {
+    stored = await storeIntakeDocument(intakeId, {
+      fileName: file.name || "upload.bin",
+      bytes: Buffer.from(await file.arrayBuffer()),
+    });
+  } catch (err) {
+    if (err instanceof UnsupportedUploadError) {
+      return NextResponse.json({ ok: false, error: err.message }, { status: 415 });
+    }
+    throw err;
+  }
   const doc = await prisma.intakeDocument.create({
     data: {
       intakeId,
