@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { publicIntakeSchema } from "@/lib/schemas/intake";
 import { createIntakeRecord, answersFromInput } from "@/lib/intake-create";
 import { prisma } from "@/lib/prisma";
-import { storeIntakeDocument } from "@/lib/storage";
+import { storeIntakeDocument, UnsupportedUploadError, assertAllowedUpload } from "@/lib/storage";
 
 export async function POST(req: Request) {
   try {
@@ -23,6 +23,23 @@ export async function POST(req: Request) {
       ? await prisma.partner.findUnique({ where: { referralCode: partnerCode } })
       : null;
 
+    const uploads: { slug: string; fileName: string; bytes: Buffer }[] = [];
+    for (const [key, value] of Array.from(form.entries())) {
+      if (!key.startsWith("file_") || !(value instanceof File) || value.size === 0) {
+        continue;
+      }
+      const bytes = Buffer.from(await value.arrayBuffer());
+      try {
+        assertAllowedUpload(bytes, value.name || "upload.bin");
+      } catch (err) {
+        if (err instanceof UnsupportedUploadError) {
+          return NextResponse.json({ ok: false, error: err.message }, { status: 415 });
+        }
+        throw err;
+      }
+      uploads.push({ slug: key.slice(5), fileName: value.name || "upload.bin", bytes });
+    }
+
     const intake = await createIntakeRecord({
       ...parsed.data,
       partnerId: partner?.id ?? null,
@@ -33,12 +50,9 @@ export async function POST(req: Request) {
       }),
     });
 
-    for (const [key, value] of Array.from(form.entries())) {
-      if (!key.startsWith("file_") || !(value instanceof File) || value.size === 0) {
-        continue;
-      }
-      const slug = key.slice(5);
-      const stored = await storeIntakeDocument(intake.id, value);
+    for (const upload of uploads) {
+      const slug = upload.slug;
+      const stored = await storeIntakeDocument(intake.id, upload);
       const checklistItem = intake.checklistItems.find((i) => i.itemDef.slug === slug);
       const doc = await prisma.intakeDocument.create({
         data: {
