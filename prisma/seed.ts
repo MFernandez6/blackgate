@@ -194,7 +194,7 @@ async function main() {
     prisma.staff.create({
       data: {
         name: "Miguel Fernandez",
-        email: "miguel@blacklinepa.com",
+        email: "miguel.fernandez@blacklinepublicadjusters.com",
         passwordHash,
         role: "ADMIN",
       },
@@ -557,7 +557,7 @@ async function main() {
   });
 
   console.log("BLACKGATE seed complete.");
-  console.log("  Admin        miguel@blacklinepa.com / Password123!");
+  console.log("  Admin        miguel.fernandez@blacklinepublicadjusters.com / Password123!");
   console.log("  Gatekeeper   gate@blacklinepa.com / Password123!");
   console.log("  Intake staff intake@blacklinepa.com / Password123!");
   console.log(`  Sources: ${Object.keys(sourceBySlug).length}  Intakes: ${samples.length}`);
